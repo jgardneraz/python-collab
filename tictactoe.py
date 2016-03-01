@@ -5,8 +5,8 @@ class toeboard(object):
     def __init__(self):
         #stores board as [row][column]
         self.state = [[' ', ' ', ' '],[' ', ' ', ' '],[' ', ' ', ' ']]
-        #stores who goes next player1 = True, player2 = False(p2 = computer when applicable)
-        self.pturn = True
+        #stores who goes next player1 = 'X', player2 = 'O'(p2 = computer when applicable)
+        self.pturn = 'X'
     
     #clear the board when a game is over 
     def clear(self):
@@ -67,6 +67,16 @@ class toeboard(object):
         elif (self.state[0][2] == self.state[1][1] == self.state[2][0]) and self.state[0][2] != ' ':
             return True
 
+        #checks to see if all spaces are taken
+        tie = False
+        for c in self.state:
+            for v in c:
+                if v == ' ':
+                   tie = True 
+
+        if not(tie):
+            return 'tie'
+
         return False
                
     #to grid format: turns numpad n into self.state[x][y]
@@ -87,19 +97,7 @@ class toeboard(object):
 
         #enters data into toeboard, returns False if unsuccessful
         if self.state[row][num] == ' ':
-            if self.pturn:
-                self.state[row][num] = 'X' 
-            else:
-                self.state[row][num] = 'O'
-                
-            return True
-        else:
-            return False
-
-    #function to insert X, O into table. return true if successful, false otherwise 
-    def replace(self, spot, player):
-        if spot == ' ':
-            spot = player
+            self.state[row][num] = self.pturn 
             return True
         else:
             return False
@@ -114,20 +112,28 @@ class toeboard(object):
             self.pvp("Spot is already taken, please input another.")
             return False
         else:
-            self.pturn = not(self.pturn)
+            self.pturn = 'O' if self.pturn == 'X' else 'X'
             self.printState()
-
-        if self.checkWin():
+        
+        if self.checkWin() == True:
             self.clear()
             print ('+' + '-' * 18 + '+')
-            if self.pturn:
+            if self.pturn == 'X':
                 print ("| Player 2 wins!!! |")
             else:
                 print ("| Player 1 wins!!! |")
             print ('+' + '-' * 18 + '+')
+        elif self.checkWin() == 'tie': 
+            print ('+' + '-' * 5 + '+')
+            print ('| TIE |')
+            print ('+' + '-' * 5 + '+')
         else:
-            if self.pturn:
+            if self.pturn == 'X':
                 self.pvp("Player 1's turn.")
             else:
                 self.pvp("Player 2's turn.")
 
+
+if __name__ == '__main__':
+    GAME = toeboard()
+    GAME.playGame()
